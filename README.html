@@ -54,16 +54,26 @@ The entity itself can only update itself once per server tick, as that is how fr
 If the entity is moving quickly (say by being attached to a player with fast_move),
 the light source updates will appear to be jittery and may visually lag behind any parent entity.
 </p>
+<h2>Performance</h2>
 <p>
-It is currently unknown how much lag this actually generates on a server.
+It is variable how much extra load this will generate on a server.
 There is very little overhead in this mod and it is pretty much as simple as it can be;
 it is likely that there will be more load caused by re-lighting
 (though this does not occur if the entity does not move).
+Completely unscientific testing on a server running on an 2.80Ghz Intel Xeon W3530
+(by spawning the entity, attaching it to a minecart and putting it on a powered rail loop)
+suggests a ballpark figure for 1-2% extra CPU time used for one of these entities while constantly moving.
+The entity does not appear to cause load when stationary;
+this is likely because it does not change nodes if it is still positioned within the same target node from a previous tick.
+</p>
+<p>
 Server owners should evaluate this on their own servers before use;
 see the below example commands that can be used for this purpose.
-<em>Mods using this API are expected to provide config options</em>,
+<em>Mods using this API are expected to provide config options to disable dynamic lighting</em>,
 or at least add reasonable limitation to how light entities are used.
-If this gets abused I may consider either a global disable or a mechanism to blacklist mods.
+If this gets abused I may consider either a global disable, a mechanism to blacklist mods,
+or a mechanism to limit the update speed globally.
+I am open to any other suggestions from server owners looking to reduce the load potentially caused by this mod.
 </p>
 
 <h2>Example uses</h2>
