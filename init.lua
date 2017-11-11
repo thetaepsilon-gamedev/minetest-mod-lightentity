@@ -62,12 +62,9 @@ local validate_offset = function(c)
 end
 
 -- assign default values if they are missing so we don't get async callbacks blowing up the server.
-local default_if_nil = function(tbl, key, default, warnmode)
+local default_if_nil = function(tbl, key, default)
 	if tbl[key] == nil then
 		tbl[key] = default
-		if warnmode then
-			warning("lightentity:light missing key "..key)
-		end
 	end
 end
 
@@ -138,24 +135,21 @@ local check_light_limits = function(tbl)
 	tbl[k_lightlevel] = light
 end
 
-local lightentity_defaults = function(tbl, warnmode)
-	default_if_nil(tbl, k_lightlevel, minetest.LIGHT_MAX, warnmode)
+local lightentity_defaults = function(tbl)
+	default_if_nil(tbl, k_lightlevel, minetest.LIGHT_MAX)
 	check_light_limits(tbl)
 	tbl[k_offset] = validate_offset(tbl[k_offset])
-	default_if_nil(tbl, k_dtime, 0, warnmode)
+	default_if_nil(tbl, k_dtime, 0)
 end
 
 local init = function(self, staticdata, dtime_s)
 	local result = {}
-	local warnmode = false
 	if staticdata ~= "" then
-		-- expect valid data to be present in the staticdata
-		warnmode = true
 		result = minetest.parse_json(staticdata)
 	end
 	-- repair any missing keys so stuff doesn't blow up
 	if result == nil then result = {} end
-	lightentity_defaults(result, warnmode)
+	lightentity_defaults(result)
 
 	self.data = result
 	self.lastpos = getpos(self)
