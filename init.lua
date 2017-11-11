@@ -84,7 +84,7 @@ local mklight = function(pos, self)
 	minetest.set_node(pos, {name=source_prefix..level})
 end
 
-local on_step = function(self, dtime)
+local update_light = function(self)
 	local cpos = getpos(self)
 	local oldpos = self.lastpos
 	self.lastpos = cpos
@@ -102,6 +102,10 @@ local on_step = function(self, dtime)
 			minetest.set_node(oldpos, {name="air"})
 		end
 	end
+end
+
+local on_step = function(self, dtime)
+	update_light(self)
 end
 
 -- when de-serialising, check that the light level is set to something sane.
