@@ -48,6 +48,7 @@ The "lightentity:light" entity accepts parameter data in json form for the stati
 	"lightlevel": 14,
 	"offset": {x: 0, y: 0, z: 0},
 	"interval": 0,
+	"kill_on_detach": true
 }
 </pre>
 <ul>
@@ -67,6 +68,10 @@ The "lightentity:light" entity accepts parameter data in json form for the stati
 	It is recommended that if this is non-zero, that it is set to slightly less than a multiple of 0.1
 	(e.g. 0.48) as the server tick timing does not always deliver a dtime of precisely 0.1 to on_step callbacks -
 	it can sometimes be slighly less.
+	</li>
+	<li>
+	kill_on_detach controls whether the entity will vanish itself when detached from a parent entity.
+	When this happens, the entity will attempt to clean up any light source node it left in a previous position.
 	</li>
 </ul>
 
