@@ -32,6 +32,7 @@ end
 local k_lightlevel = "lightlevel"
 local k_offset = "offset"
 local k_dtime = "interval"
+local k_killdetach = "kill_on_detach"
 
 -- get the position at which the light node should be, given the entity position.
 -- allow specifying an offset as specifying an attach offset to some entities
@@ -102,7 +103,19 @@ local update_light = function(self)
 	end
 end
 
+local isattached = function(self) return self.object:get_attach() ~= nil end
+
 local on_step = function(self, dtime)
+	-- check attachment state from previous tick.
+	-- if we were attached but are now not, remove the entity if config requests it.
+	local attached_now = isattached(self)
+	local was_attached = self.attachstate
+	self.attachstate = attached_now
+	if (was_attached) and (not attached_now) and (self.data[k_killdetach]) then
+		self.object:remove()
+		return
+	end
+
 	--print("dtime: "..dtime)
 	-- accumulate total dtime since last update.
 	-- if over threshold, reset and run the update code
@@ -140,6 +153,7 @@ local lightentity_defaults = function(tbl)
 	check_light_limits(tbl)
 	tbl[k_offset] = validate_offset(tbl[k_offset])
 	default_if_nil(tbl, k_dtime, 0)
+	default_if_nil(tbl, k_killdetach, true)
 end
 
 local init = function(self, staticdata, dtime_s)
@@ -154,6 +168,7 @@ local init = function(self, staticdata, dtime_s)
 	self.data = result
 	self.lastpos = getpos(self)
 	self.dtime = 0
+	self.attachstate = false
 end
 local on_save = function(self) return minetest.write_json(self.data) end
 
