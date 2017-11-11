@@ -1,0 +1,50 @@
+<h2>lightentity</h2>
+<p>
+Adds a "light entity" and invisible light source nodes to the game.
+</p>
+
+<p>
+Every server tick this entity will check it's current position to see if it's target node has moved.
+If it has, the entity will clean up the old node if it's still there,
+then place a new one in the new position if there is air there.
+This gives the impression of a light source which moves around, following the entity.
+</p>
+
+<p>
+Corresponding nodes for all possible light source levels are generated.
+These are invisible, light-emitting nodes that can be placed into,
+so they can be cleaned up if one gets stuck somewhere
+(in the same manner as removing a lighting glitch).
+The entity supports specifying the light level to emit at,
+as well as the offset relative to it to use as the target node.
+</p>
+
+<p>
+The "lightentity:light" entity accepts parameter data in json form for the staticdata string when spawned from minetest.add_entity().
+</p>
+<pre>
+{
+	"lightlevel": 14,
+	"offset": {x: 0, y: 0, z: 0}
+}
+</pre>
+<ul>
+	<li>
+	lightlevel is the level of light that should be "emitted" by the entity.
+	Will be coerced to within 1 - minetest.LIGHT_MAX with a warning if not within that range.
+	</li>
+	<li>
+	offset is a typical minetest coordinate xyz vector which is added to the entity's base position,
+	to determine where
+	</li>
+</ul>
+
+<h2>License</h2>
+<p>
+All code and crappy textures are authored by myself but are released from copyright restrictions;
+go forth and be free.
+This is free and unencumbered software released into the public domain.
+See the LICENSE file for details; the license applies to the textures as well where software is mentioned.
+If this creates problems or ambiguity for anyone under any juristiction, I am open to PRs for discussion,
+but the intent is to dedicate this entire repository's contents to the public domain.
+</p>
