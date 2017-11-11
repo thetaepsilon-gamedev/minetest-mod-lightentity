@@ -86,7 +86,6 @@ end
 local update_light = function(self)
 	local cpos = getpos(self)
 	local oldpos = self.lastpos
-	self.lastpos = cpos
 	-- place a new light source if the target node is different from the last one,
 	-- and clear up the old one.
 	-- this creates the impression that the light source moves to follow the entity.
@@ -101,6 +100,7 @@ local update_light = function(self)
 			minetest.set_node(oldpos, {name="air"})
 		end
 	end
+	self.lastpos = cpos
 end
 
 local isattached = function(self) return self.object:get_attach() ~= nil end
