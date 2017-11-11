@@ -83,6 +83,13 @@ local mklight = function(pos, self)
 	minetest.set_node(pos, {name=source_prefix..level})
 end
 
+local cleanup_lastpos = function(self)
+	local oldpos = self.lastpos
+	if issourcenode(oldpos) then
+		minetest.set_node(oldpos, {name="air"})
+	end
+end
+
 local update_light = function(self)
 	local cpos = getpos(self)
 	local oldpos = self.lastpos
@@ -96,9 +103,7 @@ local update_light = function(self)
 		-- only remove the node in the old position if it's one of ours.
 		-- there's not much that can be done if it gets moved by mesecons piston say;
 		-- it could have ended up anywhere, so just leave it if so.
-		if issourcenode(oldpos) then
-			minetest.set_node(oldpos, {name="air"})
-		end
+		cleanup_lastpos(self)
 	end
 	self.lastpos = cpos
 end
