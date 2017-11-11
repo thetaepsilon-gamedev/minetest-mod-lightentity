@@ -31,6 +31,7 @@ end
 -- light entity data, logic and definitions follow.
 local k_lightlevel = "lightlevel"
 local k_offset = "offset"
+local k_dtime = "interval"
 
 -- get the position at which the light node should be, given the entity position.
 -- allow specifying an offset as specifying an attach offset to some entities
@@ -105,7 +106,18 @@ local update_light = function(self)
 end
 
 local on_step = function(self, dtime)
-	update_light(self)
+	--print("dtime: "..dtime)
+	-- accumulate total dtime since last update.
+	-- if over threshold, reset and run the update code
+	local accumulated = self.dtime
+	--print("accumulated: "..accumulated)
+	local total = accumulated + dtime
+	--print("total: "..total)
+	if total > self.data[k_dtime] then
+		update_light(self)
+		total = 0
+	end
+	self.dtime = total
 end
 
 -- when de-serialising, check that the light level is set to something sane.
@@ -130,6 +142,7 @@ local lightentity_defaults = function(tbl, warnmode)
 	default_if_nil(tbl, k_lightlevel, minetest.LIGHT_MAX, warnmode)
 	check_light_limits(tbl)
 	tbl[k_offset] = validate_offset(tbl[k_offset])
+	default_if_nil(tbl, k_dtime, 0, warnmode)
 end
 
 local init = function(self, staticdata, dtime_s)
@@ -146,6 +159,7 @@ local init = function(self, staticdata, dtime_s)
 
 	self.data = result
 	self.lastpos = getpos(self)
+	self.dtime = 0
 end
 local on_save = function(self) return minetest.write_json(self.data) end
 
