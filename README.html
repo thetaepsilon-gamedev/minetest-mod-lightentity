@@ -19,6 +19,7 @@ The entity supports specifying the light level to emit at,
 as well as the offset relative to it to use as the target node.
 </p>
 
+<h2>Usage in mods</h2>
 <p>
 The "lightentity:light" entity accepts parameter data in json form for the staticdata string when spawned from minetest.add_entity().
 </p>
@@ -38,6 +39,20 @@ The "lightentity:light" entity accepts parameter data in json form for the stati
 	to determine where the light source should be at that moment in time.
 	</li>
 </ul>
+
+<h2>Example uses</h2>
+<p>
+This mod by itself does NOT add anything useable in survival.
+It is intended to be used in other mods, and the entity moved/attached as needed
+(e.g. by a mod which spawns the entity attached to a player when they wield a torch).
+That said, below are some commands that can be used with the "luacmd" mod by server admins to evaluate the impact on a server,
+though it is expected that you understand what these commands are doing:
+</p>
+<pre>
+/lua lightref = minetest.add_entity(me:get_pos(), "lightentity:light", "{\"lightlevel\": 14, \"offset\": {\"x\": 0, \"y\": 1, \"z\": 0}}")
+
+/lua lightref:set_attach(me, "light_tether", {}, {})
+</pre>
 
 <h2>License</h2>
 <p>
