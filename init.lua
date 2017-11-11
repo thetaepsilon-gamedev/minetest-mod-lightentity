@@ -39,6 +39,27 @@ local getpos = function(self)
 	return center(vector.add(self.object:get_pos(), self.data[k_offset]))
 end
 
+-- validate coordinate table passed in from staticdata.
+-- returns either the passed value or an identity offset so the code has something to work with.
+local validate_offset = function(c)
+	local fname = "validate_offset() "
+	local n = function(v) return type(v) == "number" end
+	local result = {x=0,y=0,z=0}
+
+	local t = type(c)
+	if (t ~= "table") then
+		warning(fname.."offset expected to be a vector table, got "..t)
+	else
+		if n(c.x) and n(c.y) and n(c.z) then
+			result = c
+		else
+			warning(fname.."one or more components of xyz vector missing")
+		end
+	end
+
+	return result
+end
+
 -- assign default values if they are missing so we don't get async callbacks blowing up the server.
 local default_if_nil = function(tbl, key, default, warnmode)
 	if tbl[key] == nil then
@@ -104,7 +125,7 @@ end
 local lightentity_defaults = function(tbl, warnmode)
 	default_if_nil(tbl, k_lightlevel, minetest.LIGHT_MAX, warnmode)
 	check_light_limits(tbl)
-	default_if_nil(tbl, k_offset, {x=0,y=0,z=0}, warnmode)
+	tbl[k_offset] = validate_offset(tbl[k_offset])
 end
 
 local init = function(self, staticdata, dtime_s)
