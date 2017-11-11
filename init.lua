@@ -117,6 +117,7 @@ local on_step = function(self, dtime)
 	local was_attached = self.attachstate
 	self.attachstate = attached_now
 	if (was_attached) and (not attached_now) and (self.data[k_killdetach]) then
+		cleanup_lastpos(self)
 		self.object:remove()
 		return
 	end
