@@ -46,7 +46,8 @@ The "lightentity:light" entity accepts parameter data in json form for the stati
 <pre>
 {
 	"lightlevel": 14,
-	"offset": {x: 0, y: 0, z: 0}
+	"offset": {x: 0, y: 0, z: 0},
+	"interval": 0,
 }
 </pre>
 <ul>
@@ -57,6 +58,15 @@ The "lightentity:light" entity accepts parameter data in json form for the stati
 	<li>
 	offset is a typical minetest coordinate xyz vector which is added to the entity's base position,
 	to determine where the light source should be at that moment in time.
+	</li>
+	<li>
+	interval is the accumulated dtime threshold (in seconds) to wait for between updates.
+	The light position will be updated approximately this often.
+	Setting this higher than 0.1 (10 times a second, default server tick speed)
+	can reduce server load when it is expected the entity will not move very fast.
+	It is recommended that if this is non-zero, that it is set to slightly less than a multiple of 0.1
+	(e.g. 0.48) as the server tick timing does not always deliver a dtime of precisely 0.1 to on_step callbacks -
+	it can sometimes be slighly less.
 	</li>
 </ul>
 
@@ -81,16 +91,17 @@ There is very little overhead in this mod and it is pretty much as simple as it 
 it is likely that there will be more load caused by re-lighting
 (though this does not occur if the entity does not move).
 Completely unscientific testing on a server running on an 2.80Ghz Intel Xeon W3530
-(by spawning the entity, attaching it to a minecart and putting it on a powered rail loop)
+(by spawning the entity with no interval delay, attaching it to a minecart and putting it on a powered rail loop)
 suggests a ballpark figure for 1-2% extra CPU time used for one of these entities while constantly moving.
 The entity does not appear to cause load when stationary;
 this is likely because it does not change nodes if it is still positioned within the same target node from a previous tick.
+Using a slightly more conservative interval of 0.28 caused the overhead to fall within margin of error.
 </p>
 <p>
 Server owners should evaluate this on their own servers before use;
 see the below example commands that can be used for this purpose.
 <em>Mods using this API are expected to provide config options to disable dynamic lighting</em>,
-or at least add reasonable limitation to how light entities are used.
+and use them conservatively (both in count and update interval) and not in excess of what is required.
 If this gets abused I may consider either a global disable, a mechanism to blacklist mods,
 or a mechanism to limit the update speed globally.
 I am open to any other suggestions from server owners looking to reduce the load potentially caused by this mod.
@@ -101,14 +112,20 @@ I am open to any other suggestions from server owners looking to reduce the load
 This mod by itself does NOT add anything useable in survival.
 It is intended to be used in other mods, and the entity moved/attached as needed
 (e.g. by a mod which spawns the entity attached to a player when they wield a torch).
-That said, below are some commands that can be used with the "luacmd" mod by server admins to evaluate the impact on a server,
-though it is expected that you understand what these commands are doing:
+That said, below are some commands that can be used with the "luacmd" mod by server admins to evaluate the
+<em>worse-case</em> impact on a server per light entity at full speed.
+It is expected that you understand what these commands are doing.
 </p>
 <pre>
 /lua lightref = minetest.add_entity(me:get_pos(), "lightentity:light", "{\"lightlevel\": 14, \"offset\": {\"x\": 0, \"y\": 1, \"z\": 0}}")
 
 /lua lightref:set_attach(me, "light_tether", {}, {})
 </pre>
+<p>
+It should be noted again that the above spawn command represents worse-case performance,
+with the light entity updating as frequently as the server will allow.
+Mods that do not need 10hz update rate can choose to set a higher interval.
+</p>
 
 <h2>License</h2>
 <p>
