@@ -13,7 +13,7 @@ local min = 1
 local max = minetest.LIGHT_MAX
 
 -- FIXME: make these configurable
-local debugmode = true
+local debug_entity = true
 local debug_nodepos = false
 
 local compare_pos = function(a, b)
@@ -164,13 +164,13 @@ end
 local on_save = function(self) return minetest.write_json(self.data) end
 
 local sprite
-if debugmode then
+if debug_entity then
 	sprite = suntex
 else
 	sprite = nodraw
 end
 local nametag
-if debugmode then nametag = name end
+if debug_entity then nametag = name end
 
 minetest.register_entity(name, {
 	collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
