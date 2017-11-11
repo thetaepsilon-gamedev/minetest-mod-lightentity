@@ -40,6 +40,32 @@ The "lightentity:light" entity accepts parameter data in json form for the stati
 	</li>
 </ul>
 
+<h2>Caveats</h2>
+<p>
+The game engine does not allow mods to create a "lighting glitch" by adjusting the param1 value of nodes with paramtype="light" in their node definition.
+It seems that the engine immediately notices that the node is not a light source after the call to set/swap_node().
+Therefore the entity has to emit light by spawning a light-emitting invisible node;
+it is very conservative about how it does this, currently only replacing air nodes with it's own,
+so it won't work if e.g. the entity is inside a non-solid node or underwater
+(though this may be the intended effect depending on use case).
+</p>
+<p>
+The entity itself can only update itself once per server tick, as that is how frequently on_step() is invoked.
+If the entity is moving quickly (say by being attached to a player with fast_move),
+the light source updates will appear to be jittery and may visually lag behind any parent entity.
+</p>
+<p>
+It is currently unknown how much lag this actually generates on a server.
+There is very little overhead in this mod and it is pretty much as simple as it can be;
+it is likely that there will be more load caused by re-lighting
+(though this does not occur if the entity does not move).
+Server owners should evaluate this on their own servers before use;
+see the below example commands that can be used for this purpose.
+<em>Mods using this API are expected to provide config options</em>,
+or at least add reasonable limitation to how light entities are used.
+If this gets abused I may consider either a global disable or a mechanism to blacklist mods.
+</p>
+
 <h2>Example uses</h2>
 <p>
 This mod by itself does NOT add anything useable in survival.
