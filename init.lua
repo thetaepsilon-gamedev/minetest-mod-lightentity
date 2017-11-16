@@ -119,12 +119,9 @@ end
 local isattached = function(self) return self.object:get_attach() ~= nil end
 
 local on_step = function(self, dtime)
-	-- check attachment state from previous tick.
-	-- if we were attached but are now not, remove the entity if config requests it.
+	-- check attachment state and remove entity if not attached.
 	local attached_now = isattached(self)
-	local was_attached = self.attachstate
-	self.attachstate = attached_now
-	if (was_attached) and (not attached_now) and (self.data[k_killdetach]) then
+	if (not attached_now) and (self.data[k_killdetach]) then
 		cleanup_lastpos(self)
 		self.object:remove()
 		return
@@ -182,7 +179,6 @@ local init = function(self, staticdata, dtime_s)
 	self.data = result
 	self.lastpos = getpos(self)
 	self.dtime = 0
-	self.attachstate = false
 
 	-- create initial light as otherwise one won't be created until the target node moves.
 	initial_light(self)
