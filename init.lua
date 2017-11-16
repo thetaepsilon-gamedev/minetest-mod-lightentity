@@ -13,7 +13,7 @@ local min = 1
 local max = minetest.LIGHT_MAX
 
 -- FIXME: make these configurable
-local debug_entity = true
+local debug_entity = false
 local debug_nodepos = false
 
 local compare_pos = function(a, b)
