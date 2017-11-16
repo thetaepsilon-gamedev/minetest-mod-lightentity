@@ -108,6 +108,14 @@ local update_light = function(self)
 	self.lastpos = cpos
 end
 
+-- variation of the above to be called on first entity load
+local initial_light = function(self)
+	local cpos = getpos(self)
+	if islightablenode(cpos) then
+		mklight(cpos, self)
+	end
+end
+
 local isattached = function(self) return self.object:get_attach() ~= nil end
 
 local on_step = function(self, dtime)
@@ -175,6 +183,9 @@ local init = function(self, staticdata, dtime_s)
 	self.lastpos = getpos(self)
 	self.dtime = 0
 	self.attachstate = false
+
+	-- create initial light as otherwise one won't be created until the target node moves.
+	initial_light(self)
 end
 local on_save = function(self) return minetest.write_json(self.data) end
 
