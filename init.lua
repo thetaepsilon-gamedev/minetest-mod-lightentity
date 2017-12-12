@@ -1,5 +1,5 @@
 local libmthelpers = modns.get("com.github.thetaepsilon.minetest.libmthelpers")
-local center = libmthelpers.playerpos.center_on_node
+local center = libmthelpers.coords.round_to_node
 
 local modname = minetest.get_current_modname()
 local name = modname..":light"
